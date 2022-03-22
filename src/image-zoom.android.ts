@@ -189,7 +189,7 @@ export class ImageZoom extends ImageZoomBase {
         } else if (typeof src === 'object') {
             const tempFile = path.join(
                 knownFolders.currentApp().path,
-                `${Date.now()} + .png`
+                `${Date.now()}.png`
             );
             const saved = (<ImageSource>src).saveToFile(tempFile, 'png');
             if (saved) {
