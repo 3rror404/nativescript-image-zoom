@@ -1,6 +1,6 @@
-import * as observable from 'tns-core-modules/data/observable';
-import * as pages from 'tns-core-modules/ui/page';
-import { ImageSource, fromResource } from 'tns-core-modules/image-source';
+import * as observable from '@nativescript/core/data/observable';
+import * as pages from '@nativescript/core/ui/page';
+import { fromResource } from '@nativescript/core';
 import { HelloWorldModel } from './main-view-model';
 import { ImageZoom } from 'nativescript-image-zoom';
 
