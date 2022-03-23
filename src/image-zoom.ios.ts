@@ -17,7 +17,6 @@ import {
 export class ImageZoom extends ImageZoomBase {
     _image: any;
     private delegate: any;
-    private get scrollView() { return this.nativeView as UIScrollView; }
 
     constructor() {
         super();
@@ -29,6 +28,9 @@ export class ImageZoom extends ImageZoomBase {
         this._image.contentMode = UIViewContentMode.ScaleAspectFit;
         const nativeView = UIScrollView.new();
         nativeView.addSubview(this._image);
+        nativeView.zoomScale = this.zoomScale;
+        nativeView.minimumZoomScale = this.minZoom;
+        nativeView.maximumZoomScale = this.maxZoom;
         return nativeView;
     }
 
@@ -38,10 +40,7 @@ export class ImageZoom extends ImageZoomBase {
 
     public onLayout(left: number, top: number, right: number, bottom: number): void {
         super.onLayout(left, top, right, bottom);
-        this.setMinScale(this.minZoom);
-        this.setMaxScale(this.maxZoom);
-        this.setScale(this.zoomScale);
-        this.refreshContentSize();
+        this._image.frame = this.nativeView.bounds;
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
@@ -58,54 +57,6 @@ export class ImageZoom extends ImageZoomBase {
             new WeakRef<ImageZoom>(this)
         );
         this.nativeView.delegate = this.delegate;
-    }
-
-    refreshContentSize() {
-        console.log('refreshContentSize()');
-        const scrollView = this.nativeView as UIScrollView;
-        const scaledSize = {
-          width: this._image.image.size.width * scrollView.zoomScale,
-          height: this._image.image.size.height * scrollView.zoomScale,
-        };
-        const width = scrollView.bounds.size.width > scaledSize.width
-          ? scrollView.bounds.size.width
-          : scaledSize.width;
-        const height = scrollView.bounds.size.height > scaledSize.height
-          ? scrollView.bounds.size.height
-          : scaledSize.height;
-        this._image.frame = CGRectMake(0, 0, width, height);
-        scrollView.contentSize = CGSizeMake(width, height);
-    }
-
-    private calcInitScale() {
-        console.log('calcInitScale()');
-        const image = this._image.image;
-        const wRatio = image.size.width / this.scrollView.bounds.size.width;
-        const hRatio = image.size.height / this.scrollView.bounds.size.height;
-
-        console.log(wRatio > hRatio ? this.scrollView.bounds.size.width / image.size.width : this.scrollView.bounds.size.height / image.size.height);
-
-        return wRatio > hRatio
-            ? this.scrollView.bounds.size.width / image.size.width
-            : this.scrollView.bounds.size.height / image.size.height;
-    }
-
-    private setMinScale(scale: number) {
-        this.scrollView.minimumZoomScale = this.calcInitScale() * scale;
-
-        console.log('Min Scale', this.scrollView.minimumZoomScale);
-    }
-
-    private setMaxScale(scale: number) {
-        this.scrollView.maximumZoomScale = this.calcInitScale() * scale;
-
-        console.log('Max Scale', this.scrollView.maximumZoomScale);
-    }
-
-    private setScale(scale: number) {
-        this.scrollView.zoomScale = this.calcInitScale() * scale;
-
-        console.log('Scale', this.scrollView.zoomScale);
     }
 
     [stretchProperty.setNative](value: 'none' | 'aspectFill' | 'aspectFit' | 'fill') {
@@ -170,7 +121,6 @@ export class ImageZoom extends ImageZoomBase {
     }
 }
 
-@NativeClass()
 export class UIScrollViewDelegateImpl extends NSObject
     implements UIScrollViewDelegate {
     private owner: WeakRef<ImageZoom>;
@@ -187,10 +137,5 @@ export class UIScrollViewDelegateImpl extends NSObject
     viewForZoomingInScrollView(scrollView: UIScrollView) {
         const owner = this.owner.get();
         return owner._image;
-    }
-
-    scrollViewDidZoom?(scrollView: UIScrollView) {
-        console.log('scrollViewDidZoom()');
-        this.owner.get().refreshContentSize();
     }
 }

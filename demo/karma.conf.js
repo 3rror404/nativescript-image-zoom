@@ -1,9 +1,8 @@
-const filePatterns = ['app/tests/**/*.*'];
-module.exports = function (config) {
-  const options = {
+module.exports = function(config) {
+  config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: 'app',
+    basePath: '',
 
 
     // frameworks to use
@@ -12,7 +11,9 @@ module.exports = function (config) {
 
 
     // list of files / patterns to load in the browser
-    files: filePatterns,
+    files: [
+      'app/**/*.js'
+    ],
 
 
     // list of files to exclude
@@ -71,44 +72,6 @@ module.exports = function (config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
-  };
-
-  setWebpackPreprocessor(config, options);
-  setWebpack(config, options);
-
-  config.set(options);
-}
-module.exports.filePatterns = filePatterns;
-// You can also use RegEx if you'd like:
-// module.exports.filesRegex = /\.\/tests\/.*\.ts$/;
-
-function setWebpackPreprocessor(config, options) {
-  if (config && config.bundle) {
-    if (!options.preprocessors) {
-      options.preprocessors = {};
-    }
-
-    options.files.forEach(file => {
-      if (!options.preprocessors[file]) {
-        options.preprocessors[file] = [];
-      }
-      options.preprocessors[file].push('webpack');
-    });
-  }
-}
-
-function setWebpack(config, options) {
-  if (config && config.bundle) {
-    const env = {};
-    env[config.platform] = true;
-    env.sourceMap = config.debugBrk;
-    env.appPath = config.appPath;
-    env.karmaWebpack = true;
-    options.webpack = require('./webpack.config')(env);
-    delete options.webpack.entry;
-    delete options.webpack.output.libraryTarget;
-    const invalidPluginsForUnitTesting = ["GenerateBundleStarterPlugin", "GenerateNativeScriptEntryPointsPlugin"];
-    options.webpack.plugins = options.webpack.plugins.filter(p => !invalidPluginsForUnitTesting.includes(p.constructor.name));
-  }
-}
+    singleRun: true
+  });
+};

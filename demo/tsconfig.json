@@ -1,16 +1,15 @@
 {
     "compilerOptions": {
-        "target": "es2017",
-        "module": "esnext",
+        "target": "es5",
+        "module": "commonjs",
         "declaration": false,
-        "removeComments": false,
+        "removeComments": true,
         "noLib": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": [
             "es6",
-            "dom",
-            "es2017"
+            "dom"
         ],
         "pretty": true,
         "allowUnreachableCode": false,
@@ -26,8 +25,7 @@
             "*": [
                 "./node_modules/*"
             ]
-        },
-        "moduleResolution": "node"
+        }
     },
     "exclude": [
         "node_modules",
